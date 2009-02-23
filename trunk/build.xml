@@ -1,0 +1,94 @@
+<!-- Uses Apache ANT to build source -->
+<project name="jStore" default="release" basedir=".">
+	<property description="Curent Release Version" name="VERSION" value="1.0" />
+	
+	<!-- Directory Setup -->
+	<property name="DIR_BUILD" value="build" />
+	<property name="DIR_SRC" value="src" />
+	<property name="DIR_DIST" value="dist" />
+	<property name="DIR_DEV" value="${DIR_DIST}/development" />
+	<property name="DIR_PROD" value="${DIR_DIST}/production" />
+	<property name="DIR_RELEASE" value="${DIR_DIST}/release" />
+	
+	<!-- File Setup -->
+	<property name="FILE_BUILDNUM" value="${DIR_BUILD}/build.num" />
+	<property name="FILE_CORE" value="${DIR_DEV}/jquery.jstore.js" />
+	<property name="FILE_ALL" value="${DIR_DEV}/jquery.jstore-all.js" />
+	
+	<!-- Release File Output -->
+	<buildnumber file="${FILE_BUILDNUM}"/>
+	<property name="ZIP_DEV" value="${DIR_RELEASE}/jStore-${VERSION}.${build.number}-development.zip" />
+	<property name="ZIP_PROD" value="${DIR_RELEASE}/jStore-${VERSION}.${build.number}-production.zip" />
+	<property name="TAR_DEV" value="${DIR_RELEASE}/jStore-${VERSION}.${build.number}-development.tar" />
+	<property name="TAR_PROD" value="${DIR_RELEASE}/jStore-${VERSION}.${build.number}-production.tar" />
+	
+	<!-- Minify Task -->
+	<property name="JS_MIN" location="${DIR_BUILD}/yuicompressor-2.4.2.jar" />
+	<property name="JS_MIN_ANT" location="${DIR_BUILD}/yui-compressor-ant-task-0.3.jar" />
+	
+	<path id="MINIFY_TASK">
+	  <pathelement location="${JS_MIN}" />
+	  <pathelement location="${JS_MIN_ANT}" />
+	</path>
+	
+	<taskdef name="minify" classname="net.noha.tools.ant.yuicompressor.tasks.YuiCompressorTask">
+		<classpath refid="MINIFY_TASK" />
+	</taskdef>
+	
+	<!-- Generic Build Targets -->
+	<target name="clean">
+        <delete dir="${DIR_DIST}" />
+		<mkdir dir="${DIR_DEV}" />
+    </target>
+	
+	<!-- Development Build Targets -->
+	<target name="core" description="Creates the jStore plugin, with no included engines">
+		<echo message="Building Core Plugin" />
+		<concat destfile="${FILE_CORE}">
+			<fileset dir="${DIR_SRC}/core" />
+		</concat>
+	</target>
+	
+	<target name="all" description="Creates the jStore plugin with all engines included." depends="core">
+		<echo message="Building Complete Plugin" />
+		<concat destfile="${FILE_ALL}">
+			<fileset file="${FILE_CORE}" />
+			<fileset dir="${DIR_SRC}/engines" />
+		</concat>
+	</target>
+	
+	<target name="engines" description="Moves all Engines to the development distribution directory" depends="core">
+		<echo message="Moving Engines to the Development Distribution Directory" />
+		<mkdir dir="${DIR_DEV}/engines" />
+		<copy todir="${DIR_SRC}/engines">
+			<fileset dir="${DIR_DEV}/engines"/>
+		</copy>
+	</target>
+	
+	<target name="development" description="Create a Development Release" depends="clean,all,engines">
+		<echo message="Development Release Created" />
+	</target>
+	
+	<!-- Production Build Targets -->
+	<target name="production" description="Creates a Production Release" depends="development">
+		<mkdir dir="${DIR_PROD}" />
+		<echo message="Minifying All Development Files" />
+		<minify warn="false" munge="true" preserveallsemicolons="false" jsSuffix="-min.js" fromdir="${DIR_DEV}" todir="${DIR_PROD}" />
+	</target>
+	
+	<!-- Release Build Targets -->
+	<target name="release" description="Create release archives" depends="production">
+		<mkdir dir="${DIR_RELEASE}" />
+		<zip destfile="${ZIP_DEV}" basedir="${DIR_DEV}" />
+		<zip destfile="${ZIP_PROD}" basedir="${DIR_PROD}" />
+		
+		<tar destfile="${TAR_DEV}" basedir="${DIR_DEV}" />
+		<tar destfile="${TAR_PROD}" basedir="${DIR_PROD}" />
+		
+		<gzip destfile="${TAR_DEV}.gz" src="${TAR_DEV}" />
+		<gzip destfile="${TAR_PROD}.gz" src="${TAR_PROD}" />
+		
+		<delete file="${TAR_DEV}" />
+		<delete file="${TAR_PROD}" />
+	</target>
+</project>
