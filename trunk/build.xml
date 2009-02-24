@@ -45,7 +45,9 @@
 	<target name="core" description="Creates the jStore plugin, with no included engines">
 		<echo message="Building Core Plugin" />
 		<concat destfile="${FILE_CORE}">
-			<fileset dir="${DIR_SRC}/core" />
+			<fileset file="${DIR_SRC}/core/jStore.jQuery.js" />
+			<fileset file="${DIR_SRC}/core/jStore.Class.js" />
+			<fileset file="${DIR_SRC}/core/jStore.Engine.js" />
 		</concat>
 	</target>
 	
@@ -60,18 +62,24 @@
 	<target name="engines" description="Moves all Engines to the development distribution directory" depends="core">
 		<echo message="Moving Engines to the Development Distribution Directory" />
 		<mkdir dir="${DIR_DEV}/engines" />
-		<copy todir="${DIR_SRC}/engines">
-			<fileset dir="${DIR_DEV}/engines"/>
+		<copy todir="${DIR_DEV}/engines">
+			<fileset dir="${DIR_SRC}/engines"/>
 		</copy>
 	</target>
 	
 	<target name="development" description="Create a Development Release" depends="clean,all,engines">
+		<copy todir="${DIR_DEV}">
+			<fileset file="${DIR_SRC}/jStore.swf"/>
+		</copy>
 		<echo message="Development Release Created" />
 	</target>
 	
 	<!-- Production Build Targets -->
 	<target name="production" description="Creates a Production Release" depends="development">
 		<mkdir dir="${DIR_PROD}" />
+		<copy todir="${DIR_PROD}">
+			<fileset file="${DIR_SRC}/jStore.swf"/>
+		</copy>
 		<echo message="Minifying All Development Files" />
 		<minify warn="false" munge="true" preserveallsemicolons="false" jsSuffix="-min.js" fromdir="${DIR_DEV}" todir="${DIR_PROD}" />
 	</target>

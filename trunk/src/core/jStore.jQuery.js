@@ -1,5 +1,5 @@
-/**
- * jStore jQuery Interface
+/*!*
+ * jStore - Persistent Client-Side Storage
  *
  * Copyright (c) 2009 Eric Garside (http://eric.garside.name)
  * 
@@ -32,10 +32,10 @@
 		isFlashReady: false,
 		// An event delegate
 		delegate: $('<a></a>')
-			.bind('jStore-ready', function(){
+			.bind('jStore-ready', function(e, engine){
 				$.jStore.isReady = true;
 				if ($.jStore.defaults.autoload)
-					$.jStore.CurrentEngine.connect();
+					engine.connect();
 			})
 			.bind('flash-ready', function(){
 				$.jStore.isFlashReady = true;
@@ -56,7 +56,7 @@
 	
 	// Enable and test an engine
 	$.jStore.use = function(engine, project, identifier){
-		project = project || location.hostname.replace(/\./, '-') || 'unknown';
+		project = project || $.jStore.defaults.project || location.hostname.replace(/\./, '-') || 'unknown';
 		
 		var e = $.jStore.Engines[engine.toLowerCase()] || null,
 			name = (identifier ? identifier + '.' : '') + project + '.' + engine;
@@ -68,14 +68,14 @@
 		
 		// Prevent against naming conflicts
 		if ($.jStore.Instances[name]) throw 'JSTORE_JRI_CONFLICT';
-
+		
 		// Test the engine
 		if (e.isAvailable()){
 			$.jStore.Instances[name] = e;	// The Easy Way
 			if (!$.jStore.CurrentEngine){
 				$.jStore.CurrentEngine = e;
-				$.jStore.delegate.triggerHandler('jStore-ready', [e]);
 			}
+			$.jStore.delegate.triggerHandler('jStore-ready', [e]);
 		} else {
 			if (!e.autoload)				// Not available
 				throw 'JSTORE_ENGINE_UNAVILABLE';
@@ -86,8 +86,8 @@
 						// If there is no current engine, use this one
 						if (!$.jStore.CurrentEngine){
 							$.jStore.CurrentEngine = e;
-							$.jStore.delegate.triggerHandler('jStore-ready', [e]);
 						} 
+						$.jStore.delegate.triggerHandler('jStore-ready', [e]);
 					}
 					else throw 'JSTORE_ENGINE_ACTIVATION_FAILURE';
 				}).include();
