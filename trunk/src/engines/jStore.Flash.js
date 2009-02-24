@@ -50,7 +50,7 @@
 		},
 		rem: function(key){
 			var beforeDelete = this.get(key);
-			this.flash_cookie.f_delete_cookie(key);
+			this.db.f_delete_cookie(key);
 			return beforeDelete;
 		}
 	})
