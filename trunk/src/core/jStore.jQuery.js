@@ -130,7 +130,7 @@
 		if ( !value ) // Executing a get command
 			return $.jStore.CurrentEngine.get(key);
 		// Executing a set command
-			return $.jStore.CurrentEngine.set(key);
+			return $.jStore.CurrentEngine.set(key, value);
 	}
 	// Provide a simple interface for storing/getting values
 	$.remove = function(key){
