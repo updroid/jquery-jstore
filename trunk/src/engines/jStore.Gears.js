@@ -63,5 +63,8 @@
 	})
 
 	$.jStore.Engines.gears = jStoreGears;
+	
+	// Store the ordering preference
+	$.jStore.EngineOrder[ 3 ] = 'gears';
 
 })(jQuery);

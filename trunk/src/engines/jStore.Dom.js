@@ -62,5 +62,8 @@
 
 	$.jStore.Engines.local = jStoreLocal;
 	$.jStore.Engines.session = jStoreSession;
+	
+	// Store the ordering preference
+	$.jStore.EngineOrder[ 1 ] = 'local';
 
 })(jQuery);

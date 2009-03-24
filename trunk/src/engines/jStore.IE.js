@@ -46,5 +46,8 @@
 	})
 
 	$.jStore.Engines.ie = jStoreIE;
+	
+	// Store the ordering preference
+	$.jStore.EngineOrder[ 4 ] = 'ie';
 
 })(jQuery);

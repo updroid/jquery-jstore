@@ -57,6 +57,9 @@
 
 	$.jStore.Engines.flash = jStoreFlash;
 
+	// Store the ordering preference
+	$.jStore.EngineOrder[ 2 ] = 'flash';
+
 })(jQuery);
 
 // Callback fired when ExternalInterface is established

@@ -66,4 +66,7 @@
 
 	$.jStore.Engines.html5 = jStoreHtml5;
 
+	// Store the ordering preference
+	$.jStore.EngineOrder[ 0 ] = 'html5';
+
 })(jQuery);

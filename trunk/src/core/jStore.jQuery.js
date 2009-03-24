@@ -11,6 +11,7 @@
 	
 	// Setup the jStore namespace in jQuery for options storage
 	$.jStore = {
+		EngineOrder: [],
 		// Engines should put their availability tests within jStore.Availability
 		Availability: {},
 		// Defined engines should enter themselves into the jStore.Engines
@@ -115,9 +116,9 @@
 	
 	// Test all possible engines for straightforward useability
 	$.jStore.FindEngine = function(){
-		$.each($.jStore.Availability, function(k){
-			if (this()){ // Find the first, easiest option and use it.
-				$.jStore.use(k, $.jStore.defaults.project, 'default');
+		$.each($.jStore.EngineOrder, function(k){
+			if ($.jStore.Availability[this]()){ // Find the first, easiest option and use it.
+				$.jStore.use(this, $.jStore.defaults.project, 'default');
 				return false;
 			}
 		})
