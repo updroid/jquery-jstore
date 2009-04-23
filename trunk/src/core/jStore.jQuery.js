@@ -57,7 +57,7 @@
 	
 	// Enable and test an engine
 	$.jStore.use = function(engine, project, identifier){
-		project = project || $.jStore.defaults.project || location.hostname.replace(/\./, '-') || 'unknown';
+		project = project || $.jStore.defaults.project || location.hostname.replace(/\./g, '-') || 'unknown';
 		
 		var e = $.jStore.Engines[engine.toLowerCase()] || null,
 			name = (identifier ? identifier + '.' : '') + project + '.' + engine;

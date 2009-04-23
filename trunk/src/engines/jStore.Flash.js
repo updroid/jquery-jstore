@@ -7,7 +7,7 @@
 	
 	// Set up a static test function for this instance
 	var avilability = $.jStore.Availability.flash = function(){
-		return !!(window.swfobject && jQuery.hasFlash('8.0.0'));
+		return !!(njQuery.hasFlash('8.0.0'));
 	}
 	
 	this.jStoreFlash = StorageEngine.extend({
