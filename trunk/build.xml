@@ -1,6 +1,6 @@
 <!-- Uses Apache ANT to build source -->
 <project name="jStore" default="release" basedir=".">
-	<property description="Curent Release Version" name="VERSION" value="1.0" />
+	<property description="Curent Release Version" name="VERSION" value="1.1" />
 	
 	<!-- Directory Setup -->
 	<property name="DIR_BUILD" value="build" />
@@ -45,8 +45,10 @@
 	<target name="core" description="Creates the jStore plugin, with no included engines">
 		<echo message="Building Core Plugin" />
 		<concat destfile="${FILE_CORE}">
-			<fileset file="${DIR_SRC}/core/jStore.jQuery.js" />
+			<fileset file="${DIR_SRC}/core/license.js" />
 			<fileset file="${DIR_SRC}/core/jStore.Class.js" />
+			<fileset file="${DIR_SRC}/core/jStore.Delegate.js" />
+			<fileset file="${DIR_SRC}/core/jStore.jQuery.js" />
 			<fileset file="${DIR_SRC}/core/jStore.Engine.js" />
 		</concat>
 	</target>
@@ -70,6 +72,7 @@
 	<target name="development" description="Create a Development Release" depends="clean,all,engines">
 		<copy todir="${DIR_DEV}">
 			<fileset file="${DIR_SRC}/jStore.swf"/>
+			<fileset file="${DIR_SRC}/jStore.Flash.html"/>
 		</copy>
 		<echo message="Development Release Created" />
 	</target>

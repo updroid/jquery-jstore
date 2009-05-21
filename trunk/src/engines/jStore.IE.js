@@ -25,7 +25,7 @@
 			this.db = $('<div style="display:none;behavior:url(\'#default#userData\')" id="jstore-' + this.project + '"></div>')
 						.appendTo(document.body).get(0);
 			// Fire our delegate to indicate we're ready for data transactions
-			this.delegate.triggerHandler('engine-ready', [this]);
+			this.delegate.trigger('engine-ready');
 		},
 		isAvailable: avilability,
 		get: function(key){

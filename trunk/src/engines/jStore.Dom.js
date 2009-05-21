@@ -25,7 +25,7 @@
 		},
 		connect: function(){
 			// Fire our delegate to indicate we're ready for data transactions
-			this.delegate.triggerHandler('engine-ready', [this]);
+			this.delegate.trigger('engine-ready');
 		},
 		get: function(key){
 			var out = this.db.getItem(key);
@@ -62,7 +62,7 @@
 
 	$.jStore.Engines.local = jStoreLocal;
 	$.jStore.Engines.session = jStoreSession;
-	
+
 	// Store the ordering preference
 	$.jStore.EngineOrder[ 1 ] = 'local';
 

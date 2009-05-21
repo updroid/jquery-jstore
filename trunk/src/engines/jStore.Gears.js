@@ -41,7 +41,7 @@
 			} result.close();
 			
 			// Fire our delegate to indicate we're ready for data transactions
-			this.delegate.triggerHandler('engine-ready', [this]);
+			this.delegate.trigger('engine-ready');
 		},
 		isAvailable: avilability,
 		set: function(key, value){

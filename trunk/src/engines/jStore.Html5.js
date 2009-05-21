@@ -36,14 +36,14 @@
 			// Read the database into our cache object
 			this.db.transaction(function(db){
 				db.executeSql( 'SELECT k,v FROM jstore', [], function(db, result){
-					rows = result.rows;
-					for (var i = 0; i < rows.length; ++i){
-						var row = rows.item(i);
+					var rows = result.rows, i = 0, row;
+					for (; i < rows.length; ++i){
+						row = rows.item(i);
 						self.data[row.k] = row.v;
 					}
 					
 					// Fire our delegate to indicate we're ready for data transactions
-					self.delegate.triggerHandler('engine-ready', [self]);
+					self.delegate.trigger('engine-ready');
 				});
 			});
 		},
