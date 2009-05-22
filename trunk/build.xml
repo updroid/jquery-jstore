@@ -82,6 +82,7 @@
 		<mkdir dir="${DIR_PROD}" />
 		<copy todir="${DIR_PROD}">
 			<fileset file="${DIR_SRC}/jStore.swf"/>
+			<fileset file="${DIR_SRC}/jStore.Flash.html"/>
 		</copy>
 		<echo message="Minifying All Development Files" />
 		<minify warn="false" munge="true" preserveallsemicolons="false" jsSuffix="-min.js" fromdir="${DIR_DEV}" todir="${DIR_PROD}" />
