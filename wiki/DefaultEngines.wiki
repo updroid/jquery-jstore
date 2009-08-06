@@ -1,0 +1,9 @@
+#summary Reference guide to the default engine each browser will use, given default settings.
+
+= Introduction =
+
+This page is designed to act as a reference guide for the default engine that will be used by jStore on different versions of different browsers.
+
+= Default Engines =
+
+|| || gears || local || session || html5 || ie || flash ||
