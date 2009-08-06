@@ -7,7 +7,7 @@
 	// Setup the jStore namespace in jQuery for options storage
 	$.jStore = {};
 	
-	// Seed the options in
+	// Seed the object
 	$.extend($.jStore, {
 		EngineOrder: [],
 		// Engines should put their availability tests within jStore.Availability
@@ -37,136 +37,146 @@
 			})
 			.bind('flash-ready', function(){
 				$.jStore.isFlashReady = true;
-			})			
-	});
-	
-	// Enable ready callback for jStore
-	$.jStore.ready = function(callback){
-		if ($.jStore.isReady) callback.apply($.jStore, [$.jStore.CurrentEngine]);
-		else $.jStore.delegate.bind('jStore-ready', callback);
-	}
-	
-	// Enable failure callback registration for jStore
-	$.jStore.fail = function(callback){
-		$.jStore.delegate.bind('jStore-failure', callback);
-	}
-	
-	// Enable ready callback for Flash
-	$.jStore.flashReady = function(callback){
-		if ($.jStore.isFlashReady) callback.apply($.jStore, [$.jStore.CurrentEngine]);
-		else $.jStore.delegate.bind('flash-ready', callback);
-	}
-	
-	// Enable and test an engine
-	$.jStore.use = function(engine, project, identifier){
-		project = project || $.jStore.defaults.project || location.hostname.replace(/\./g, '-') || 'unknown';
+			}),
+		// Enable ready callback for jStore
+		ready: function(callback){
+			if ($.jStore.isReady) callback.apply($.jStore, [$.jStore.CurrentEngine]);
+			else $.jStore.delegate.bind('jStore-ready', callback);
+		},
+		// Enable failure callback registration for jStore
+		fail: function(callback){
+			$.jStore.delegate.bind('jStore-failure', callback);
+		},
+		// Enable ready callback for Flash
+		flashReady: function(callback){
+			if ($.jStore.isFlashReady) callback.apply($.jStore, [$.jStore.CurrentEngine]);
+			else $.jStore.delegate.bind('flash-ready', callback);
+		},
+		// Enable and test an engine
+		use: function(engine, project, identifier){
+			project = project || $.jStore.defaults.project || location.hostname.replace(/\./g, '-') || 'unknown';
 		
-		var e = $.jStore.Engines[engine.toLowerCase()] || null,
-			name = (identifier ? identifier + '.' : '') + project + '.' + engine;
+			var e = $.jStore.Engines[engine.toLowerCase()] || null,
+				name = (identifier ? identifier + '.' : '') + project + '.' + engine;
 		
-		if ( !e ) throw 'JSTORE_ENGINE_UNDEFINED';
+			if ( !e ) throw 'JSTORE_ENGINE_UNDEFINED';
 
-		// Instanciate the engine
-		e = new e(project, name);
+			// Instanciate the engine
+			e = new e(project, name);
 		
-		// Prevent against naming conflicts
-		if ($.jStore.Instances[name]) throw 'JSTORE_JRI_CONFLICT';
+			// Prevent against naming conflicts
+			if ($.jStore.Instances[name]) throw 'JSTORE_JRI_CONFLICT';
 		
-		// Test the engine
-		if (e.isAvailable()){
-			$.jStore.Instances[name] = e;	// The Easy Way
-			if (!$.jStore.CurrentEngine){
-				$.jStore.CurrentEngine = e;
+			// Test the engine
+			if (e.isAvailable()){
+				$.jStore.Instances[name] = e;	// The Easy Way
+				if (!$.jStore.CurrentEngine){
+					$.jStore.CurrentEngine = e;
+				}
+				$.jStore.delegate.trigger('jStore-ready', e);
+			} else {
+				if (!e.autoload)				// Not available
+					throw 'JSTORE_ENGINE_UNAVILABLE';
+				else { 							// The hard way
+					e.included(function(){
+						if (this.isAvailable()) { // Worked out
+							$.jStore.Instances[name] = this;
+							// If there is no current engine, use this one
+							if (!$.jStore.CurrentEngine){
+								$.jStore.CurrentEngine = this;
+							} 
+							$.jStore.delegate.trigger('jStore-ready', this);
+						}
+						else $.jStore.delegate.trigger('jStore-failure', this);
+					}).include();
+				}
 			}
-			$.jStore.delegate.trigger('jStore-ready', e);
-		} else {
-			if (!e.autoload)				// Not available
-				throw 'JSTORE_ENGINE_UNAVILABLE';
-			else { 							// The hard way
-				e.included(function(){
-					if (this.isAvailable()) { // Worked out
-						$.jStore.Instances[name] = this;
-						// If there is no current engine, use this one
-						if (!$.jStore.CurrentEngine){
-							$.jStore.CurrentEngine = this;
-						} 
-						$.jStore.delegate.trigger('jStore-ready', this);
-					}
-					else $.jStore.delegate.trigger('jStore-failure', this);
-				}).include();
+		},
+		// Set the current storage engine
+		setCurrentEngine: function(name){
+			if (!$.jStore.Instances.length )				// If no instances exist, attempt to load one
+				return $.jStore.FindEngine();
+			
+			if (!name && $.jStore.Instances.length >= 1) { // If no name is specified, use the first engine
+				$.jStore.delegate.trigger('jStore-ready', $.jStore.Instances[0]);
+				return $.jStore.CurrentEngine = $.jStore.Instances[0];
 			}
-		}
-	}
-	
-	// Set the current storage engine
-	$.jStore.setCurrentEngine = function(name){
-		if (!$.jStore.Instances.length )				// If no instances exist, attempt to load one
-			return $.jStore.FindEngine();
 			
-		if (!name && $.jStore.Instances.length >= 1) { // If no name is specified, use the first engine
-			$.jStore.delegate.trigger('jStore-ready', $.jStore.Instances[0]);
-			return $.jStore.CurrentEngine = $.jStore.Instances[0];
-		}
-			
-		if (name && $.jStore.Instances[name]) { // If a name is specified and exists, use it
-			$.jStore.delegate.trigger('jStore-ready', $.jStore.Instances[name]);
-			return $.jStore.CurrentEngine = $.jStore.Instances[name];
-		}
-		
-		throw 'JSTORE_JRI_NO_MATCH';
-	}
-	
-	// Test all possible engines for straightforward useability
-	$.jStore.FindEngine = function(){
-		$.each($.jStore.EngineOrder, function(k){
-			if ($.jStore.Availability[this]()){ // Find the first, easiest option and use it.
-				$.jStore.use(this, $.jStore.defaults.project, 'default');
-				return false;
+			if (name && $.jStore.Instances[name]) { // If a name is specified and exists, use it
+				$.jStore.delegate.trigger('jStore-ready', $.jStore.Instances[name]);
+				return $.jStore.CurrentEngine = $.jStore.Instances[name];
 			}
-		})
-	}
-	
-	// Provide a simple interface for storing/getting values
-	$.store = function(key, value){
-		if (!$.jStore.CurrentEngine) return false;
 		
-		if ( !value ) // Executing a get command
-			return $.jStore.CurrentEngine.get(key);
-		// Executing a set command
-			return $.jStore.CurrentEngine.set(key, value);
-	}
-	// Provide a simple interface for storing/getting values
-	$.remove = function(key){
-		if (!$.jStore.CurrentEngine) return false;
-		
-		return $.jStore.CurrentEngine.rem(key);
-	}
-	
-	// Provide a chainable interface for storing values/getting a value at the end of a chain
-	$.fn.store = function(key, value){
-		if (!$.jStore.CurrentEngine) return this;
-		
-		var result = $.store(key, value);
-		
-		return !value ? result : this;
-	}
-	
-	// Provide a chainable interface for removing values
-	$.fn.removeStore = function(key){
-		$.remove(key);
-		
-		return this;
-	}
-	
-	// Provide a way for users to call for auto-loading
-	$.jStore.load = function(){
-		if ($.jStore.defaults.engine)
-			return $.jStore.use($.jStore.defaults.engine, $.jStore.defaults.project, 'default');
+			throw 'JSTORE_JRI_NO_MATCH';
+		},
+		// Test all possible engines for straightforward useability
+		FindEngine: function(){
+			$.each($.jStore.EngineOrder, function(k){
+				if ($.jStore.Availability[this]()){ // Find the first, easiest option and use it.
+					$.jStore.use(this, $.jStore.defaults.project, 'default');
+					return false;
+				}
+			})
+		},
+		// Provide a way for users to call for auto-loading
+		load: function(){
+			if ($.jStore.defaults.engine)
+				return $.jStore.use($.jStore.defaults.engine, $.jStore.defaults.project, 'default');
 			
-		// Attempt to find a valid engine, and catch any exceptions if we can't
-		try {
-			$.jStore.FindEngine();
-		} catch (e) {}
-	}
+			// Attempt to find a valid engine, and catch any exceptions if we can't
+			try {
+				$.jStore.FindEngine();
+			} catch (e) {}
+		},
+		// Parse a value as JSON before its stored.
+		safeStore: function(value){
+			switch (typeof value){
+				case 'object': case 'function': return $.compactJSON(value);
+				case 'number': case 'boolean': case 'string': case 'xml': return value;
+				case 'undefined': default: return '';
+			}
+		},
+		// Restores JSON'd values before returning
+		safeResurrect: function(value){
+			return $.evalJSON(value);
+		}
+	});
+
+	// Extend the core jQuery object
+	$.extend($, {
+		// Provide a simple interface for storing/getting values
+		store: function(key, value){
+			if (!$.jStore.CurrentEngine) return false;
+		
+			if ( !value ) // Executing a get command
+				return $.jStore.CurrentEngine.get(key);
+			// Executing a set command
+				return $.jStore.CurrentEngine.set(key, value);
+		},
+		// Provide a simple interface for removing values
+		remove: function(key){
+			if (!$.jStore.CurrentEngine) return false;
+		
+			return $.jStore.CurrentEngine.rem(key);
+		}
+	})
+	
+	// Extend the jQuery funcitonal object
+	$.extend($.fn, {
+		// Provide a chainable interface for storing values/getting a value at the end of a chain
+		store: function(key, value){
+			if (!$.jStore.CurrentEngine) return this;
+		
+			var result = $.store(key, value);
+		
+			return !value ? result : this;
+		},
+		// Provide a chainable interface for removing values
+		removeStore: function(key){
+			$.remove(key);
+		
+			return this;
+		}
+	})
 	
 })(jQuery);

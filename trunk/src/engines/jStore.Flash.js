@@ -54,10 +54,10 @@
 		isAvailable: avilability,
 		get: function(key){
 			var out = this.db.f_get_cookie(key);
-			return out == 'null' ? null : out;
+			return out == 'null' ? null : $.jStore.safeResurrect(out);
 		},
 		set: function(key, value){
-			this.db.f_set_cookie(key, value);
+			this.db.f_set_cookie(key, $.jStore.safeStore(value));
 			return value;
 		},
 		rem: function(key){

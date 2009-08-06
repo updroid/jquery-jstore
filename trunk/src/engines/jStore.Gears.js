@@ -36,7 +36,7 @@
 			// Read the database into our cache object
 			var result = this.db.execute( 'SELECT k,v FROM jstore' );
 			while (result.isValidRow()){
-				this.data[result.field(0)] = result.field(1);
+				this.data[result.field(0)] = $.jStore.safeResurrect( result.field(1) );
 				result.next();
 			} result.close();
 			
@@ -48,7 +48,7 @@
 			// Update the database
 			var db = this.db;
 			db.execute( 'BEGIN' );
-			db.execute( 'INSERT OR REPLACE INTO jstore(k, v) VALUES (?, ?)', [key,value] );
+			db.execute( 'INSERT OR REPLACE INTO jstore(k, v) VALUES (?, ?)', [key,$.jStore.safeStore(value)] );
 			db.execute( 'COMMIT' );
 			return this._super(key, value);
 		},

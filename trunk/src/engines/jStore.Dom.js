@@ -30,10 +30,10 @@
 		get: function(key){
 			var out = this.db.getItem(key);
 			// Gecko's getItem returns {value: 'the value'}, WebKit returns 'the value'
-			return out && out.value ? out.value : out
+			return $.jStore.safeResurrect( (out && out.value ? out.value : out) );
 		},
 		set: function(key, value){
-			this.db.setItem(key,value); 
+			this.db.setItem(key,$.jStore.safeStore(value)); 
 			return value;
 		},
 		rem: function(key){

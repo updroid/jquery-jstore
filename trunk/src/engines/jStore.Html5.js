@@ -39,7 +39,7 @@
 					var rows = result.rows, i = 0, row;
 					for (; i < rows.length; ++i){
 						row = rows.item(i);
-						self.data[row.k] = row.v;
+						self.data[row.k] = $.jStore.safeResurrect( row.v );
 					}
 					
 					// Fire our delegate to indicate we're ready for data transactions
@@ -51,7 +51,7 @@
 		set: function(key, value){
 			// Update the database
 			this.db.transaction(function(db){
-				db.executeSql( 'INSERT OR REPLACE INTO jstore(k, v) VALUES (?, ?)', [key,value]);
+				db.executeSql( 'INSERT OR REPLACE INTO jstore(k, v) VALUES (?, ?)', [key,$.jStore.safeStore(value)]);
 			});
 			return this._super(key, value);
 		},

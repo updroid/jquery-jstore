@@ -30,10 +30,10 @@
 		isAvailable: avilability,
 		get: function(key){
 			this.db.load(this.project);
-			return this.db.getAttribute(key);
+			return $.jStore.safeResurrect( this.db.getAttribute(key) );
 		},
 		set: function(key, value){
-			this.db.setAttribute(key, value);
+			this.db.setAttribute(key, $.jStore.safeStore(value));
 			this.db.save(this.project);
 			return value;
 		},

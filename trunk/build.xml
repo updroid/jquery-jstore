@@ -46,6 +46,7 @@
 		<echo message="Building Core Plugin" />
 		<concat destfile="${FILE_CORE}">
 			<fileset file="${DIR_SRC}/core/license.js" />
+			<fileset file="${DIR_SRC}/core/jquery.json-1.3.js" />
 			<fileset file="${DIR_SRC}/core/jStore.Class.js" />
 			<fileset file="${DIR_SRC}/core/jStore.Delegate.js" />
 			<fileset file="${DIR_SRC}/core/jStore.jQuery.js" />
