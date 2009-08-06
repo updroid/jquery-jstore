@@ -4,6 +4,10 @@
 
 This page is designed to act as a reference guide for the default engine that will be used by jStore on different versions of different browsers.
 
+= Helping =
+We still need a bunch of help populating this data. If you have a browser that's not listed below, and want to help, please go to http://eric.garside.name/jstore.html
+
 = Default Engines =
 
 || || gears || local || session || html5 || ie || flash ||
+||Safari v4|| || || ||--X--|| || ||
