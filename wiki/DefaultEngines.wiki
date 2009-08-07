@@ -11,3 +11,5 @@ We still need a bunch of help populating this data. If you have a browser that's
 
 || || gears || local || session || html5 || ie || flash ||
 ||Safari v4|| || || ||--X--|| || ||
+||Firefox v3.5|| ||--X--|| || || || ||
+||Chrome v2|| || || || || ||--X--||
