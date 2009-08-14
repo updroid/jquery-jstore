@@ -28,15 +28,18 @@
 			this.delegate.trigger('engine-ready');
 		},
 		get: function(key){
+			this.interruptAccess();
 			var out = this.db.getItem(key);
 			// Gecko's getItem returns {value: 'the value'}, WebKit returns 'the value'
 			return $.jStore.safeResurrect( (out && out.value ? out.value : out) );
 		},
 		set: function(key, value){
+			this.interruptAccess();
 			this.db.setItem(key,$.jStore.safeStore(value)); 
 			return value;
 		},
 		rem: function(key){
+			this.interruptAccess();
 			var out = this.get(key); 
 			this.db.removeItem(key); 
 			return out

@@ -49,6 +49,7 @@
 		},
 		isAvailable: avilability,
 		set: function(key, value){
+			this.interruptAccess();
 			// Update the database
 			this.db.transaction(function(db){
 				db.executeSql( 'INSERT OR REPLACE INTO jstore(k, v) VALUES (?, ?)', [key,$.jStore.safeStore(value)]);
@@ -56,6 +57,7 @@
 			return this._super(key, value);
 		},
 		rem: function(key){
+			this.interruptAccess();
 			// Update the database
 			this.db.transaction(function(db){
 				db.executeSql( 'DELETE FROM jstore WHERE k = ?', [key] )

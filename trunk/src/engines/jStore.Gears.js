@@ -45,6 +45,7 @@
 		},
 		isAvailable: avilability,
 		set: function(key, value){
+			this.interruptAccess();
 			// Update the database
 			var db = this.db;
 			db.execute( 'BEGIN' );
@@ -53,6 +54,7 @@
 			return this._super(key, value);
 		},
 		rem: function(key){
+			this.interruptAccess();
 			// Update the database
 			var db = this.db;
 			db.execute( 'BEGIN' );

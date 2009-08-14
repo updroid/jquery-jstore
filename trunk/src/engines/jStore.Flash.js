@@ -53,14 +53,17 @@
 		},
 		isAvailable: avilability,
 		get: function(key){
+			this.interruptAccess();
 			var out = this.db.f_get_cookie(key);
 			return out == 'null' ? null : $.jStore.safeResurrect(out);
 		},
 		set: function(key, value){
+			this.interruptAccess();
 			this.db.f_set_cookie(key, $.jStore.safeStore(value));
 			return value;
 		},
 		rem: function(key){
+			this.interruptAccess();
 			var beforeDelete = this.get(key);
 			this.db.f_delete_cookie(key);
 			return beforeDelete;

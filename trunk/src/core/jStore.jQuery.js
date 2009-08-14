@@ -4,6 +4,14 @@
  */
 (function($){
 	
+	var rxJson;
+	
+	try {
+		rxJson = new RegExp('^("(\\\\.|[^"\\\\\\n\\r])*?"|[,:{}\\[\\]0-9.\\-+Eaeflnr-u \\n\\r\\t])+?$')
+	} catch (e) {
+		rxJson = /^(true|false|null|\[.*\]|\{.*\}|".*"|\d+|\d+\.\d+)$/
+	}
+	
 	// Setup the jStore namespace in jQuery for options storage
 	$.jStore = {};
 	
@@ -131,19 +139,15 @@
 		// Parse a value as JSON before its stored.
 		safeStore: function(value){
 			switch (typeof value){
-				case 'object': case 'function': return $.compactJSON(value);
+				case 'object': case 'function': return $.jStore.compactJSON(value);
 				case 'number': case 'boolean': case 'string': case 'xml': return value;
 				case 'undefined': default: return '';
 			}
 		},
 		// Restores JSON'd values before returning
 		safeResurrect: function(value){
-			return $.evalJSON(value);
-		}
-	});
-
-	// Extend the core jQuery object
-	$.extend($, {
+			return rxJson.test(value) ? $.evalJSON(value) : value;
+		},
 		// Provide a simple interface for storing/getting values
 		store: function(key, value){
 			if (!$.jStore.CurrentEngine) return false;
@@ -158,6 +162,14 @@
 			if (!$.jStore.CurrentEngine) return false;
 		
 			return $.jStore.CurrentEngine.rem(key);
+		},
+		// Alias access for reading
+		get: function(key){
+			return $.jStore.store(key);
+		},
+		// Alias access for setting
+		set: function(key, value){
+			return $.jStore.store(key, value);
 		}
 	})
 	
@@ -167,14 +179,23 @@
 		store: function(key, value){
 			if (!$.jStore.CurrentEngine) return this;
 		
-			var result = $.store(key, value);
+			var result = $.jStore.store(key, value);
 		
 			return !value ? result : this;
 		},
 		// Provide a chainable interface for removing values
 		removeStore: function(key){
-			$.remove(key);
+			$.jStore.remove(key);
 		
+			return this;
+		},
+		// Alias access for reading at the end of a chain.
+		getStore: function(key){
+			return $.jStore.store(key);
+		},
+		// Alias access for setting on a chanin.
+		setStore: function(key, value){
+			$.jStore.store(key, value);
 			return this;
 		}
 	})

@@ -1,6 +1,6 @@
 <!-- Uses Apache ANT to build source -->
 <project name="jStore" default="release" basedir=".">
-	<property description="Curent Release Version" name="VERSION" value="1.1" />
+	<property description="Curent Release Version" name="VERSION" value="1.2" />
 	
 	<!-- Directory Setup -->
 	<property name="DIR_BUILD" value="build" />

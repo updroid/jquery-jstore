@@ -29,15 +29,18 @@
 		},
 		isAvailable: avilability,
 		get: function(key){
+			this.interruptAccess();
 			this.db.load(this.project);
 			return $.jStore.safeResurrect( this.db.getAttribute(key) );
 		},
 		set: function(key, value){
+			this.interruptAccess();
 			this.db.setAttribute(key, $.jStore.safeStore(value));
 			this.db.save(this.project);
 			return value;
 		},
 		rem: function(key){
+			this.interruptAccess();
 			var beforeDelete = this.get(key);
 			this.db.removeAttribute(key);
 			this.db.save(this.project);

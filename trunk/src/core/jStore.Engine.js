@@ -50,6 +50,11 @@
 		isAvailable: function(){
 			return false;
 		},
+		// All get/set/rem functions across the engines should add this to the
+		// first line of those functions to prevent accessing the engine while unstable.
+		interruptAccess: function(){
+			if (!this.isReady) throw 'JSTORE_ENGINE_NOT_READY';
+		},
 		/** Event Subscription Shortcuts **/
 		ready: function(callback){
 			if (this.isReady) callback.apply(this);
@@ -63,13 +68,16 @@
 		},
 		/** Cache Data Access **/
 		get: function(key){
+			this.interruptAccess();
 			return this.data[key] || null;
 		},
 		set: function(key, value){
+			this.interruptAccess();
 			this.data[key] = value;
 			return value;
 		},
 		rem: function(key){
+			this.interruptAccess();
 			var beforeDelete = this.data[key];
 			this.data[key] = null;
 			return beforeDelete;			
