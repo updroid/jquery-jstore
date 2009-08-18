@@ -46,7 +46,6 @@
 		<echo message="Building Core Plugin" />
 		<concat destfile="${FILE_CORE}">
 			<fileset file="${DIR_SRC}/core/license.js" />
-			<fileset file="${DIR_SRC}/core/jquery.json-1.3.js" />
 			<fileset file="${DIR_SRC}/core/jStore.Class.js" />
 			<fileset file="${DIR_SRC}/core/jStore.Delegate.js" />
 			<fileset file="${DIR_SRC}/core/jStore.jQuery.js" />
@@ -74,6 +73,7 @@
 		<copy todir="${DIR_DEV}">
 			<fileset file="${DIR_SRC}/jStore.swf"/>
 			<fileset file="${DIR_SRC}/jStore.Flash.html"/>
+			<fileset file="${DIR_SRC}/json2.js"/>
 		</copy>
 		<echo message="Development Release Created" />
 	</target>
@@ -84,6 +84,7 @@
 		<copy todir="${DIR_PROD}">
 			<fileset file="${DIR_SRC}/jStore.swf"/>
 			<fileset file="${DIR_SRC}/jStore.Flash.html"/>
+			<fileset file="${DIR_SRC}/json2.js"/>
 		</copy>
 		<echo message="Minifying All Development Files" />
 		<minify warn="false" munge="true" preserveallsemicolons="false" jsSuffix="-min.js" fromdir="${DIR_DEV}" todir="${DIR_PROD}" />

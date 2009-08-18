@@ -4,7 +4,10 @@
  */
 (function($){
 	
-	var rxJson;
+		// Regex to test if a value is JSON
+	var rxJson,
+		// Regex to test if string is function
+		rxFunc = /function \(/;
 	
 	try {
 		rxJson = new RegExp('^("(\\\\.|[^"\\\\\\n\\r])*?"|[,:{}\\[\\]0-9.\\-+Eaeflnr-u \\n\\r\\t])+?$')
@@ -137,16 +140,20 @@
 			} catch (e) {}
 		},
 		// Parse a value as JSON before its stored.
+		// Use the browser-implementation of JSON.stringify, suggested by Mark Gibson
 		safeStore: function(value){
 			switch (typeof value){
-				case 'object': case 'function': return $.jStore.compactJSON(value);
+				case 'object': return JSON.stringify(value);
+				case 'function': return value.toString();
 				case 'number': case 'boolean': case 'string': case 'xml': return value;
 				case 'undefined': default: return '';
 			}
 		},
 		// Restores JSON'd values before returning
+		// Use the browser-implementation of JSON.parse, suggested by Mark Gibson
+		// Functions must be eval'd separately, as they aren't valid JSON.
 		safeResurrect: function(value){
-			return rxJson.test(value) ? $.evalJSON(value) : value;
+			return rxFunc.test(value) ? eval('(' + value + ')') : (rxJson.test(value) ? JSON.parse(value) : value);
 		},
 		// Provide a simple interface for storing/getting values
 		store: function(key, value){
