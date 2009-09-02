@@ -15,3 +15,4 @@ We still need a bunch of help populating this data. If you have a browser that's
 ||Firefox v3.5|| ||--X--|| || || || ||
 ||Chrome v2|| || || || || ||--X--||
 ||Explorer v8|| ||--X--|| || || || ||
+||Explorer v7|| || || || ||--X--|| ||
