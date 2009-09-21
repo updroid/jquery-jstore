@@ -2,11 +2,14 @@
 #labels Featured,Phase-Implementation
 
 = Introduction =
-
 This page is designed to act as a reference guide for the default engine that will be used by jStore on different versions of different browsers.
 
 = Helping =
 We still need a bunch of help populating this data. If you have a browser that's not listed below, and want to help, please go to http://eric.garside.name/jstore.html
+
+= FAQ =
+  * Does the --X-- denote "Supported" or "Not Supported" ?
+Neither, the "--X--" denotes the default browser which will be used in
 
 = Default Engines =
 
@@ -14,5 +17,7 @@ We still need a bunch of help populating this data. If you have a browser that's
 ||Safari v4|| || || ||--X--|| || ||
 ||Firefox v3.5|| ||--X--|| || || || ||
 ||Chrome v2|| || || || || ||--X--||
+||Chrome v3|| || || ||--X--|| || ||
+||Chrome v4|| || || ||--X--|| || ||
 ||Explorer v8|| ||--X--|| || || || ||
 ||Explorer v7|| || || || ||--X--|| ||
