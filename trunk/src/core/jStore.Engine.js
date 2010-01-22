@@ -67,9 +67,10 @@
 			return this;
 		},
 		/** Cache Data Access **/
+		// Added null support. Thanks to Iansuda for the patch (http://code.google.com/u/iansuda/)
 		get: function(key){
 			this.interruptAccess();
-			return this.data[key] || null;
+			return typeof(this.data[key]) != "undefined" ? this.data[key] : null;
 		},
 		set: function(key, value){
 			this.interruptAccess();

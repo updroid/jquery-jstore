@@ -6,7 +6,15 @@
 	
 	// Set up a static test function for this instance
 	var avilability = $.jStore.Availability.html5 = function(){
-		return !!window.openDatabase
+		if (!window.openDatabase)
+        	return false;
+        	
+        // This function will create a valid database on all engines with HTML5
+        // support which is unfortunate, but necessary for fixing a problem with
+        // google chrome, which mistakenly thinks it can actually use HTML5
+    	var db = openDatabase('jstore-accessibility-test', '1.0', "test", 10);
+    	
+    	return !!db;
 	}
 	
 	this.jStoreHtml5 = StorageEngine.extend({

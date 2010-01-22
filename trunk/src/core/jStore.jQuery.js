@@ -153,16 +153,21 @@
 		// Use the browser-implementation of JSON.parse, suggested by Mark Gibson
 		// Functions must be eval'd separately, as they aren't valid JSON.
 		safeResurrect: function(value){
-			return rxFunc.test(value) ? eval('(' + value + ')') : (rxJson.test(value) ? JSON.parse(value) : value);
+			return rxFunc.test(value) ? eval('(' + value + ')') 
+			: (value != null && rxJson.test(value) ? JSON.parse(value) : value);
 		},
 		// Provide a simple interface for storing/getting values
+		// Added null support. Thanks to Iansuda for the patch (http://code.google.com/u/iansuda/)
 		store: function(key, value){
 			if (!$.jStore.CurrentEngine) return false;
-		
-			if ( !value ) // Executing a get command
-				return $.jStore.CurrentEngine.get(key);
-			// Executing a set command
-				return $.jStore.CurrentEngine.set(key, value);
+
+        	if ( typeof(value) == "undefined" ) { // Executing a get command
+                return $.jStore.CurrentEngine.get(key);
+        	} else if ( value === null ) {        //null argument explicitly passed, remove item
+                return $.jStore.remove(key);
+        	} else {                              // Executing a set command
+                return $.jStore.CurrentEngine.set(key, value);
+        	}
 		},
 		// Provide a simple interface for removing values
 		remove: function(key){
