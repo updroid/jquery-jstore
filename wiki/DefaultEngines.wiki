@@ -16,6 +16,7 @@ Neither, the "--X--" denotes the default browser which will be used in
 || || gears || local || session || html5 || ie || flash ||
 ||Safari v4|| || || ||--X--|| || ||
 ||Firefox v3.5|| ||--X--|| || || || ||
+||Firefox v3.6|| ||--X--|| || || || ||
 ||Chrome v2|| || || || || ||--X--||
 ||Chrome v3|| || || ||--X--|| || ||
 ||Chrome v4|| || || ||--X--|| || ||
