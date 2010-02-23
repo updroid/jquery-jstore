@@ -20,7 +20,8 @@ Neither, the "--X--" denotes the default browser which will be used in
 ||Chrome v2|| || || || || ||--X--||
 ||Chrome v3|| || || ||--X--|| || ||
 ||Chrome v4|| || || ||--X--|| || ||
-||Explorer v8|| ||--X--|| || || || ||
-||Explorer v7|| || || || ||--X--|| ||
 ||Explorer v6|| || || || ||--X--|| ||
+||Explorer v7|| || || || ||--X--|| ||
+||Explorer v8|| ||--X--|| || || || ||
+||Mozilla v1.9|| ||--X--|| || || || ||
 ||Opera v9.8|| || || || || ||--X--||
