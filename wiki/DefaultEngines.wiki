@@ -9,7 +9,7 @@ We still need a bunch of help populating this data. If you have a browser that's
 
 = FAQ =
   * Does the --X-- denote "Supported" or "Not Supported" ?
-Neither, the "--X--" denotes the default browser which will be used in
+Neither, the "--X--" denotes the default browser which will be used in the given browser.
 
 = Default Engines =
 
