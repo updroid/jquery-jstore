@@ -22,6 +22,7 @@ Neither, the "--X--" denotes the default browser which will be used in the given
 ||Chrome v2|| || || || || ||--X--||
 ||Chrome v3|| || || ||--X--|| || ||
 ||Chrome v4|| || || ||--X--|| || ||
+||Chrome v4.1|| || || ||--X--|| || ||
 ||Chrome v5|| || || ||--X--|| || ||
 ||Explorer v6|| || || || ||--X--|| ||
 ||Explorer v7|| || || || ||--X--|| ||
