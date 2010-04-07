@@ -56,11 +56,6 @@
         EX_DUPLICATE = 'JSTORE_RESOURCE_NAMESPACE_COLLISION',
         
         /**
-         *  An exception thrown by the StorageEngine class whenever a store command fails.
-         */
-        EX_STORAGE = 'JSTORE_STORAGE_ERROR',
-        
-        /**
          *  An exception thrown by jStore whenever a given flavor of storage has no defined engine.
          */
         EX_UNAVAILABLE = 'JSTORE_ENGINE_UNAVAILABLE',
@@ -193,7 +188,9 @@
          *
          *      flash: <pathToFlashBootloader>,
          *
-         *      json: <pathToJSONFile>
+         *      json: <pathToJSONFile>,
+         *
+         *      errorCallback: <listenerToNotifyOnError>
          *  }
          */
         configurations = 
@@ -759,7 +756,7 @@
                 
                 window.jstore_error = function (message)
                 {
-                    _.trigger('flash-error', [message]);
+                    _.trigger('jstore-error', ['JSTORE_FLASH_EXCEPTION', null, message]);
                 };
                 
                 $('<iframe style="height:1px;width:1px;position:absolute;left:0;top:0;margin-left:-100px;" id="jStoreFlashFrame" src="' + 
@@ -873,6 +870,16 @@
             }
             
             return _;
+        },
+        
+        /**
+         *	Bind a listener to be notified when jStore causes a non-fatal exception.
+         *
+         *  @param listener The listener to notify when a failure occurs.
+         */
+        error: function (listener)
+        {
+            _.bind('jstore-error', listener);
         },
         
         /**
@@ -1161,8 +1168,6 @@
         /**
          *  Sets a property in the StorageEngine.
          *
-         *  @throws EX_STORAGE
-         *
          *  @param key      The key of the property.
          *
          *  @param value    The value of the property.
@@ -1179,7 +1184,7 @@
             }
             catch (e)
             {
-                throw EX_STORAGE;
+                _.trigger('jstore-error', ['JSTORE_STORAGE_FAILURE', this.jri, e]);
             }
             
             this.data[key] = value;
@@ -1189,8 +1194,6 @@
         
         /**
          *  Removes a property from the StorageEngine.
-         *
-         *  @throws EX_STORAGE
          *
          *  @param key  The property key of the data to remove.
          *
@@ -1206,7 +1209,7 @@
             }
             catch (e)
             {
-                throw EX_STORAGE;
+                _.trigger('jstore-error', ['JSTORE_REMOVE_FAILURE', this.jri, e]);
             }
             
             var buffer = this.data[key];
@@ -1581,7 +1584,7 @@
         {
             if (!this.database.jstore_set(key, prepareForStorage(value)))
             {
-                throw EX_STORAGE;
+                _.trigger('jstore-error', ['JSTORE_STORAGE_FAILURE', this.jri, 'Flash Exception']);
             }
         },
         
