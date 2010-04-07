@@ -337,6 +337,18 @@
     }
     
     /**
+     *	Normalize a key before using it, to ensure it's valid.
+     *
+     *  @param key  The key to normalize.
+     *
+     *  @return A normalized key, safe for storage.
+     */
+    function normalizeKey(key)
+    {
+        return key.replace(/^\s+|\s+$/g, "");
+    }
+    
+    /**
      *  Define a flavored storage engine.
      *
      *  @throws EX_COLLISION, EX_INVALID
@@ -1178,6 +1190,8 @@
         {
             this.__interruptAccess();
             
+            key = normalizeKey(key);
+            
             try
             {
                 this.__set(key, value);
@@ -1202,6 +1216,8 @@
         remove: function (key)
         {
             this.__interruptAccess();
+            
+            key = normalizeKey(key);
             
             try
             {
