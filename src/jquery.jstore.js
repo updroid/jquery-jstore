@@ -1447,7 +1447,7 @@
     
     function ()
     {
-        return window.localStorage !== undefined || window.globalStroage !== undefined;
+        return window.localStorage !== undefined || window.globalStorage !== undefined;
     });
     
     //------------------------------
