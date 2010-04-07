@@ -337,18 +337,6 @@
     }
     
     /**
-     *	Normalize a key before using it, to ensure it's valid.
-     *
-     *  @param key  The key to normalize.
-     *
-     *  @return A normalized key, safe for storage.
-     */
-    function normalizeKey(key)
-    {
-        return key.replace(/^\s+|\s+$/g, "");
-    }
-    
-    /**
      *  Define a flavored storage engine.
      *
      *  @throws EX_COLLISION, EX_INVALID
@@ -362,6 +350,7 @@
      */
     function define(flavor, definition, availability)
     {
+
         if (!validFlavor(flavor))
         {
             throw EX_INVALID;
@@ -435,40 +424,26 @@
      */
     function flashVersion()
     {
-        // MSIE
-        try
-        {
-            // avoid fp6 minor version lookup issues
-            // see: http://blog.deconcept.com/2006/01/11/getvariable-setvariable-crash-internet-explorer-flash-6/
-            var axo = new ActiveXObject('ShockwaveFlash.ShockwaveFlash.6');
-            
-            try
-            {
-                axo.AllowScriptAccess = 'always';
-            }
-            catch (axo_e)
-            {
-                return '6,0,0';
-            }
-            
-            return new ActiveXObject('ShockwaveFlash.ShockwaveFlash').GetVariable('$version').replace(/\D+/g, ',').match(/^,?(.+),?$/)[1];
-        }
-        
-        //  Real browsers
-        catch (e)
-        {
-            try
-            {
-                if (navigator.mimeTypes["application/x-shockwave-flash"].enabledPlugin)
-                {
-                    return (navigator.plugins["Shockwave Flash 2.0"] || navigator.plugins["Shockwave Flash"]).description.replace(/\D+/g, ",").match(/^,?(.+),?$/)[1];
-                }
-            }
-            catch (flash_e)
-            {}
-        }
-        
-        return '0,0,0';
+		//other browsers
+		if (navigator.plugins && navigator.plugins.length > 0) {
+			try {
+				if(navigator.mimeTypes["application/x-shockwave-flash"].enabledPlugin){
+					return (navigator.plugins["Shockwave Flash 2.0"] || navigator.plugins["Shockwave Flash"]).description.replace(/\D+/g, ",").match(/^,?(.+),?$/)[1];
+				}
+			} catch(e) {}
+		} 
+		else {
+			//ie
+			try {
+				// avoid fp6 minor version lookup issues
+				// see: http://blog.deconcept.com/2006/01/11/getvariable-setvariable-crash-internet-explorer-flash-6/
+				var axo = new ActiveXObject('ShockwaveFlash.ShockwaveFlash.6');
+				try { axo.AllowScriptAccess = 'always';	} 
+				catch(e) { return '6,0,0'; }				
+			} catch(e) {}
+				return new ActiveXObject('ShockwaveFlash.ShockwaveFlash').GetVariable('$version').replace(/\D+/g, ',').match(/^,?(.+),?$/)[1];
+		}
+		return '0,0,0';
     }
 
     /**
@@ -674,6 +649,12 @@
             
             $(function ()
             {
+
+				//register the error callback if we have one passed in
+				if (configurations.errorCallback) {
+					_.error(configurations.errorCallback);
+				}
+				
                 //  If JSON parsing isn't defined in this browser, include it.
                 if (window.JSON === undefined)
                 {
@@ -755,22 +736,24 @@
                 window.jstore_ready = function ()
                 {
                     _.isFlashReady = true;
+
+					if (active === undefined)
+					{
+						active = jri;
+						makeReady();
+					}
+
                     _.trigger('flash-ready');
                     
-                    if (active === undefined)
-                    {
-                        makeReady();
-                    }
-                    
                     //  Remove the callback from the window scope, as it is no longer necessary
-                    window.flash_ready = undefined;
+                    window.jstore_ready = undefined;
                 };
                 
                 window.jstore_error = function (message)
                 {
                     _.trigger('jstore-error', ['JSTORE_FLASH_EXCEPTION', null, message]);
                 };
-                
+     
                 $('<iframe style="height:1px;width:1px;position:absolute;left:0;top:0;margin-left:-100px;" id="jStoreFlashFrame" src="' + 
                     configurations.flash + '"></iframe>').appendTo('body');   
             }
@@ -806,6 +789,7 @@
          */
         activeEngine: function (jri)
         {
+
             if (jri !== undefined)
             {
                 if (engines[jri] === undefined)
@@ -1173,6 +1157,12 @@
         get: function (key)
         {
             this.__interruptAccess();
+
+            key = _.activeEngine().__normalizeKey(key);
+
+			if ( typeof(key) == "undefined" || key == null || key == "" ) { //just return if bad key
+				return false;
+			}
             
             return this.data[key];
         },
@@ -1190,8 +1180,12 @@
         {
             this.__interruptAccess();
             
-            key = normalizeKey(key);
-            
+            key = _.activeEngine().__normalizeKey(key);
+           
+			if ( typeof(key) == "undefined" || key == null || key == "" ) { //just return if bad key
+				return false;
+			}
+ 
             try
             {
                 this.__set(key, value);
@@ -1217,7 +1211,11 @@
         {
             this.__interruptAccess();
             
-            key = normalizeKey(key);
+            key = _.activeEngine().__normalizeKey(key);
+
+			if ( typeof(key) == "undefined" || key == null || key == "" ) { //just return if bad key
+				return false;
+			}
             
             try
             {
@@ -1251,6 +1249,20 @@
                 throw EX_UNSTABLE;
             }
         },
+
+    /**
+     *	Normalize a key before using it, to ensure it's valid.
+     *
+     *  @param key  The key to normalize.
+     *
+     *  @return A normalized key, safe for storage.
+     */
+        __normalizeKey: function (key)
+		{
+			//make key a string
+			key += '';
+			return key.replace(/^\s+|\s+$/g, "");
+		},
         
         /**
          *  Sets a property in the StorageEngine. This method should be overloaded to provide actual
@@ -1402,10 +1414,9 @@
         //------------------------------
     
         init: function (project, name)
-        {   
-            this.database = window.globalStorage === undefined ? window.localStorage : window.globalStorage[location.hostname];
-            
-            this._super(project, name);
+        { 
+			this.database = !window.globalStorage ? window.localStorage : window.globalStorage[location.hostname];
+			this._super(project, name);
         },
         
         //------------------------------
@@ -1519,7 +1530,10 @@
         {
             this.database.transaction(function (database)
             {
-                database.executeSql('INSERT OR REPLACE INTO jstore(k, v) VALUES (?, ?)', [key, prepareForStorage(value)]);
+                database.executeSql('INSERT OR REPLACE INTO jstore(k, v) VALUES (?, ?)', [key, prepareForStorage(value)], 
+									   function(tx,rs){ /*nothing to do here*/ },
+									   function(tx,error){ _.trigger('jstore-error', ['JSTORE_STORAGE_FAILURE', this.jri, 'HTML5 SQL Store Exception']); }
+									);
             });
         },
         
@@ -1575,6 +1589,9 @@
              *  The default call to updateCache passes no variable, so we can short circuit the
              *  ready state until we explictly call this after flash ready.
              */
+
+
+
             if (enable === true)
             {
                 var key, 
@@ -1587,9 +1604,12 @@
                         this.data[key] = prepareForRevival(this.database.jstore_get(key));
                     }
                 }
+
             
                 this._super();
             }
+			
+			//this._super();
         },
         
         //------------------------------
@@ -1612,7 +1632,7 @@
         /**
          *  Triggered whenever flash is ready.
          */
-        __flashReadyListener: function ()
+        __flashReadyListener: function (jri)
         {
             var iFrame = $('#jStoreFlashFrame')[0],
                 frameDocument;
@@ -1647,7 +1667,8 @@
             }
             else
             {
-                this.updateCache(true);
+				this.updateCache(true);
+				//makeReady();
             }
         }
     }, 
@@ -1779,6 +1800,17 @@
         //  Internal methods
         //------------------------------
         
+		/** Keys in IE storage cannot start with a digit **/
+		__normalizeKey: function(key) {
+			key = this._super(key);
+
+			if (key.match(/^\d/) != null){
+				key = "jStore-" + key;
+			}
+
+			return key;
+		},
+
         __set: function (key, value)
         {
             this.database.setAttribute(key, prepareForStorage(value));
