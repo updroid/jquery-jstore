@@ -1590,8 +1590,6 @@
              *  ready state until we explictly call this after flash ready.
              */
 
-
-
             if (enable === true)
             {
                 var key, 
@@ -1608,8 +1606,6 @@
             
                 this._super();
             }
-			
-			//this._super();
         },
         
         //------------------------------
@@ -1632,7 +1628,7 @@
         /**
          *  Triggered whenever flash is ready.
          */
-        __flashReadyListener: function (jri)
+        __flashReadyListener: function ()
         {
             var iFrame = $('#jStoreFlashFrame')[0],
                 frameDocument;
@@ -1668,7 +1664,6 @@
             else
             {
 				this.updateCache(true);
-				//makeReady();
             }
         }
     }, 
