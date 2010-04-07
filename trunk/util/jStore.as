@@ -1,3 +1,4 @@
+Security.allowDomain("*");
 import flash.events.*;
 import flash.external.*;
 import flash.net.*;
@@ -43,6 +44,7 @@ function setItem(key:String, value) : Boolean
     }
 	
     var result:* = this.save();
+	
     if (!result)
     {
         switch(action)
@@ -63,6 +65,7 @@ function setItem(key:String, value) : Boolean
             }
         }
     }
+	
     return result;
 }// end function
 
@@ -85,10 +88,10 @@ function getItems() : Object
 //remove item at key
 function removeItem(key:String) : Boolean
 {
-	if (!this._storage ||  this._storage[key] == undefined) {
-		//nothing to do just bail out
-		return true;
-	}
+		if (!this._storage ||  this._storage[key] == undefined) {
+		   //nothing to do just bail out
+		   			 return true;
+					 }
     var value:* = this._storage[key];
     delete this._storage[key];
     var result:* = this.save();
@@ -161,7 +164,7 @@ function initializeSharedObject() : void
 
 function save() : Boolean
 {
-	var result:String;
+		var result:String;
     this.setTime(new Date().getTime());
 	
 	//compress it!
@@ -181,9 +184,9 @@ function save() : Boolean
     if (result == SharedObjectFlushStatus.FLUSHED)
     {
 		return true;
-	}
-	
-	return false;
+		}
+		
+		return false;
 }// end function
 
 function setTime(new_time:Number) : void
@@ -199,13 +202,13 @@ function onNetStatus(event:NetStatusEvent) : void
     {
         evt = {type:"error", info:"NetStatus Error: " + event.info.code, message:"Storage capacity requested exceeds available amount."};
 
-		//Not sending any right now
-		//sendEvent(evt);
+			//Not sending any right now
+				  //sendEvent(evt);
     }
     else
     {
         evt = {type:"success"};
-		//Not sending any right now
+			//Not sending any right now
         //sendEvent(evt);
     }
     return;
@@ -223,7 +226,7 @@ function addCallbacks(methods:Object) : void
             ExternalInterface.addCallback(method, methods[method]);
             //trace("Added callback for " + methods[method] + " named " + method);
         }
-        this.sendEvent({type:"swf_ready"});
+        //this.sendEvent({type:"swf_ready"});
     }
     return;
 }// end function
@@ -233,7 +236,7 @@ function sendEvent(e:Object) : void
     if (ExternalInterface.available)
     {
 		var type = "jstore_" + e.type;
-		var msg = e.message;
+			var msg = e.message;
         trace("Sending event " + type);
         ExternalInterface.call(type,msg);
     }
