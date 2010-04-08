@@ -661,17 +661,24 @@
                     loadScript(configurations.json);
                 }
             
-                //  If we have an explicit flavor to use, use it.
-                if (flavor !== undefined)
-                {
-                    _.create(flavor, project, 'default');
-                }
-                
-                //  Otherwise, attempt to create a best-fit engine.
-                else
-                {
-                    createBestFitEngine();
-                }
+				try {
+					//  If we have an explicit flavor to use, use it.
+					if (flavor !== undefined)
+						{
+							_.create(flavor, project, 'default');
+						}
+					
+					//  Otherwise, attempt to create a best-fit engine.
+					else
+						{
+							createBestFitEngine();
+						}
+				}
+				catch (e) {
+					//we couldn't instantiate an engine
+					_.trigger('jstore-error', [e]);
+				}
+
             });
         
             return _;
